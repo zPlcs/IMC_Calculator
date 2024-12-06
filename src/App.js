@@ -10,17 +10,37 @@ const showAlert = (mensagem) => {
 function App() {
   const [peso, setPeso] = React.useState("");
   const [altura, setAltura] = React.useState("");
-  const [imc, calcIMC] = React.useState("");
-  const [defIMC, defineIMC] = React.useState("");
+  var [imc, calcIMC] = React.useState("");
+  var [defIMC, defineIMC] = React.useState("");
+
+  const clean = () => {
+    setPeso("");
+    setAltura("");
+  };
 
   const calcular = () => {
     const pesoFormat = parseFloat(peso);
     const alturaFormat = parseFloat(altura) / 100;
+    if (!peso) {
+      showAlert("O campo de peso não pode estar vazio.");
+      return;
+    }
+
+    if (!altura) {
+      showAlert("O campo de altura não pode estar vazio.");
+      return;
+    }
+
+    if (peso <= 0 || altura <= 0) {
+      showAlert(
+        "Os campos de peso ou altura não podem ser igual ou inferior a zero."
+      );
+      return;
+    }
 
     if (isNaN(pesoFormat) || isNaN(alturaFormat)) {
       showAlert("Por favor, insira valores válidos para peso e altura.");
-      setPeso("");
-      setAltura("");
+      clean();
       console.log(`Error.`);
       return;
     }
@@ -29,23 +49,21 @@ function App() {
     const imcFormatado = imc.toFixed(2);
     calcIMC(imcFormatado);
 
-    var definicao = " ";
     if (imc < 18.5) {
-      definicao = "Abaixo do peso";
+      defIMC = "Abaixo do peso";
     } else if (imc >= 18.5 && imc < 24.9) {
-      definicao = "Peso normal";
+      defIMC = "Peso normal";
     } else if (imc >= 25 && imc < 29.9) {
-      definicao = "Sobrepeso";
+      defIMC = "Sobrepeso";
     } else if (imc >= 30 && imc < 34.9) {
-      definicao = "Obesidade I";
+      defIMC = "Obesidade I";
     } else if (imc >= 35 && imc < 39.9) {
-      definicao = "Obesidade II";
+      defIMC = "Obesidade II";
     } else {
-      definicao = "Obesidade III";
+      defIMC = "Obesidade III";
     }
-    defineIMC(definicao);
-    setPeso("");
-    setAltura("");
+    defineIMC(defIMC);
+    clean();
   };
   return (
     <View style={styles.main}>
@@ -57,7 +75,7 @@ function App() {
             style={styles.input}
             onChangeText={setPeso}
             value={peso}
-            placeholder="45..."
+            placeholder="Ex.: 70 (peso em kg)"
             keyboardType="numeric"
           />
         </View>
@@ -67,21 +85,26 @@ function App() {
             style={styles.input}
             onChangeText={setAltura}
             value={altura}
-            placeholder="158..."
+            placeholder="Ex.: 175 (altura em cm)"
             keyboardType="numeric"
           />
         </View>
         <View style={styles.output}>
           <Button title="Enviar" onPress={calcular} />
 
-          <View style={styles.output_txt_conteiner}>
-            <Text style={styles.output_txt}>Seu imc é: </Text>
-            <Text style={styles.output_txt}>{imc}</Text>
-          </View>
-          <View style={styles.output_txt_conteiner}>
-            <Text style={styles.output_txt}>Sua definição é: </Text>
-            <Text style={styles.output_txt}>{defIMC}</Text>
-          </View>
+          {imc ? (
+            <View style={styles.output_txt_conteiner}>
+              <Text style={styles.output_txt}>Seu IMC é:</Text>
+              <Text style={styles.output_txt}>{imc}</Text>
+            </View>
+          ) : null}
+
+          {defIMC ? (
+            <View style={styles.output_txt_conteiner}>
+              <Text style={styles.output_txt}>Sua definição é:</Text>
+              <Text style={styles.output_txt}>{defIMC}</Text>
+            </View>
+          ) : null}
         </View>
       </View>
     </View>
